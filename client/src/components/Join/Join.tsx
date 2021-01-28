@@ -1,0 +1,9 @@
+import React from 'react';
+
+const Join: React.FC = () => {
+  return (
+    <h1>hello Join</h1>
+  )
+}
+
+export default Join;
