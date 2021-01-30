@@ -7,11 +7,13 @@ const routing = require('./router');
 const app = require('express')();
 const server = http.createServer(app);
 
+const {addUser, removeUser, getUser, getUserInRoom} = require('./users');
+
 const io = socketio(server, {
   cors: {
     origin: 'http://localhost:3000',
     methods: ["GET", "POST"],
-    allowedHeaders: ["socket-client-header"],
+    allowedHeaders: ["socketClientHeader"],
     credentials: true
   }
 });
@@ -20,7 +22,8 @@ io.on('connection', (socket) => {
   console.log('socket connected');
 
   socket.on('join', ({name, room}, callback) => {
-    const {error, user} = addUser({id: socket.id, name, room})
+    const {error, user} = addUser({id: socket.id, name, room});
+
     if (error) return callback(error);
 
     if (user) {
@@ -29,19 +32,30 @@ io.on('connection', (socket) => {
 
       socket.join(user.room);
 
-      callback();
+      io.to(user.room).emit('roomData', {room: user.room, users: getUserInRoom(user.room)} );
     }
+
+    callback();
   });
 
   socket.on('sendMessage', (message, callback) => {
-    const user = getUser(socket.io);
+    // const user = getUser(socket.id);
+    const user = { id: 'FAsHaBaGDR919SH3AAAL', name: 'testtest', room: 'testtest' };
+
     if (user) {
+      console.log('called message from server');
       io.to(user.room).emit('message', {user: user.name, text: message});
     }
+
+    callback();
   });
 
   socket.on('disconnect', () => {
-    console.log('user had left');
+    const user = removeUser(socket.id);
+    if (user) {
+      io.to(user.room).emit('message', {user: user, text: `${user.name} has left`});
+      io.to(user.room).emit('roomData', {room: user.room, users: getUserInRoom(user.room)});
+    }
   });
 })
 

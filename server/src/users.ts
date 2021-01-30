@@ -38,4 +38,4 @@ const getUserInRoom = (room) => {
   return users.find(user => user.room === room);
 }
 
-module.exports = {addUser, removeUser, getUser, getUserInRoom};
+export {addUser, removeUser, getUser, getUserInRoom};
