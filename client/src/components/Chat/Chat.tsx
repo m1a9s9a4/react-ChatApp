@@ -17,7 +17,7 @@ const Chat: React.FC<Props> = ({ location }) => {
   const [room, setRoom] = useState('');
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const ENDPOINT = 'localhost:5000';
+  const ENDPOINT = 'http://localhost:5000';
 
   useEffect(() => {
     const {name, room} = queryString.parse(location.search);
@@ -44,12 +44,12 @@ const Chat: React.FC<Props> = ({ location }) => {
 
   useEffect(() => {
     socket.on('message', (message) => {
+      console.log("message is called");
+      console.log(message);
       setMessages([...messages, message]);
-      console.log("=================================");
-      console.log(messages);
-      console.log("=================================");
     })
-  }, []);
+    socket.emit('message', {user: 'test', text: 'test message'});
+  });
 
   const sendMessage = (event) => {
     event.preventDefault();
@@ -59,7 +59,8 @@ const Chat: React.FC<Props> = ({ location }) => {
       });
     }
   }
-
+  console.log("messages");
+  console.log(messages);
   return (
     <div className="outerContainer">
       <div className="container">
