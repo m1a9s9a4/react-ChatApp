@@ -39,12 +39,13 @@ io.on('connection', (socket) => {
   });
 
   socket.on('sendMessage', (message, callback) => {
-    // const user = getUser(socket.id);
-    const user = { id: 'FAsHaBaGDR919SH3AAAL', name: 'testtest', room: 'testtest' };
+    const user = getUser(socket.id);
 
     if (user) {
       console.log('called message from server');
+      console.log(user.room);
       io.to(user.room).emit('message', {user: user.name, text: message});
+      console.log('end calling message from server');
     }
 
     callback();
